@@ -61,33 +61,51 @@ int getKeyData(char keyData[200])
     return 1;
 }
 
-int getValueData()
+int getValueData(int whatToDo)
 {
-    char valueValue[200];
-
-    struct node *newValueData;
-    newValueData = (struct node *)malloc(sizeof(struct node));
+    char tempData[200];
 
     printf("Enter the value: ");
-    scanf("%[^\n]s", newValueData->data);
-    newValueData->link = NULL;
+    scanf("%[^\n]s",tempData);
+    
+    if(whatToDo == -1){
+        char valueValue[200];
 
-    if (headValue == NULL)
-    {
-        headValue = newValueData;
+        struct node *newValueData;
+        newValueData = (struct node *)malloc(sizeof(struct node));
+
+        strcpy(newValueData->data, tempData);
+        newValueData->link = NULL;
+
+        if (headValue == NULL)
+        {
+            headValue = newValueData;
+        }
+
+        else
+        {
+            struct node *temp = headValue;
+            while (temp->link != NULL)
+            {
+                temp = temp->link;
+            }
+            temp->link = newValueData;
+        }
+
+        lenOfDict++;
     }
 
-    else
+    else if(whatToDo != -1)
     {
+        int i=0;
         struct node *temp = headValue;
-        while (temp->link != NULL)
+        while(i<whatToDo)
         {
             temp = temp->link;
+            i++;
         }
-        temp->link = newValueData;
+        strcpy(temp->data, tempData);
     }
-
-    lenOfDict++;
     return 1;
 }
 
@@ -105,8 +123,9 @@ void insertData()
 
     if (keyPresent != -1)
     {
-        printf("\nKey is already present\nTry with a different key :<\n");
-        return;
+        int modifySuccess = 0;
+        printf("\nKey is already present\nThis modifies the current data of the key :<\n\n");
+        modifySuccess = getValueData(keyPresent);
     }
 
     else
@@ -114,7 +133,7 @@ void insertData()
         keyProcess = getKeyData(keyValue);
         if (keyProcess)
         {
-            valueProcess = getValueData();
+            valueProcess = getValueData(keyPresent);
             if (valueProcess)
             {
                 printf("\nData inserted successfully :)\n");
@@ -215,13 +234,13 @@ int delAtEnd()
 {
     struct node *temp, *prev;
     temp = headKey;
-    while(temp->link!=NULL)
+    while (temp->link != NULL)
     {
         prev = temp;
         temp = temp->link;
     }
 
-    if(temp == headKey)
+    if (temp == headKey)
     {
         headKey = NULL;
     }
@@ -231,15 +250,14 @@ int delAtEnd()
     }
     free(temp);
 
-
     temp = headValue;
-    while(temp->link!=NULL)
+    while (temp->link != NULL)
     {
         prev = temp;
         temp = temp->link;
     }
 
-    if(temp == headValue)
+    if (temp == headValue)
     {
         headValue = NULL;
     }
@@ -249,17 +267,16 @@ int delAtEnd()
     }
     free(temp);
 
-
     return 1;
 }
 
 int delAtPos(int index)
 {
-    int i=0;
+    int i = 0;
     struct node *temp, *prev;
 
     temp = headKey;
-    while(i<index)
+    while (i < index)
     {
         prev = temp;
         temp = temp->link;
@@ -269,9 +286,9 @@ int delAtPos(int index)
     temp->link = NULL;
     free(temp);
 
-    i=0;
+    i = 0;
     temp = headValue;
-    while(i<index)
+    while (i < index)
     {
         prev = temp;
         temp = temp->link;
@@ -282,7 +299,6 @@ int delAtPos(int index)
     free(temp);
 
     return 1;
-
 }
 
 void delItem()
@@ -290,32 +306,32 @@ void delItem()
     char delKey[200];
     int keyPresent = -1;
 
-    if(lenOfDict == 0)
+    if (lenOfDict == 0)
     {
         printf("\nCurrently there is no items to delete :)");
         return;
     }
 
     printf("Enter the key of item you want to delete: ");
-    scanf("%[^\n]s",delKey);
+    scanf("%[^\n]s", delKey);
     getchar();
 
     keyPresent = checkKeyValue(delKey);
 
-    if(keyPresent == -1)
+    if (keyPresent == -1)
     {
-        printf("\nNo data with this key to delete : %s",delKey);
+        printf("\nNo data with this key to delete : %s", delKey);
         return;
     }
 
     else
     {
         int delSuccess = 0;
-        if(keyPresent == 0)
+        if (keyPresent == 0)
         {
             delSuccess = delAtBeg();
         }
-        else if(keyPresent == lenOfDict-1)
+        else if (keyPresent == lenOfDict - 1)
         {
             delSuccess = delAtEnd();
         }
@@ -324,7 +340,7 @@ void delItem()
             delSuccess = delAtPos(keyPresent);
         }
 
-        if(delSuccess == 1)
+        if (delSuccess == 1)
         {
             printf("\nRecord successfully deleted :)\n");
             lenOfDict--;
@@ -333,9 +349,7 @@ void delItem()
         {
             printf("\nSome internal Error :(\n");
         }
-        
     }
-
 }
 
 int main()
